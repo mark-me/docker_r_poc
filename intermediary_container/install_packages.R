@@ -3,4 +3,4 @@ install.packages("dplyr")
 install.packages("ggplot2")
 install.packages("forcats")
 install.packages("plumber")
-
+install.packages("rmarkdown")
