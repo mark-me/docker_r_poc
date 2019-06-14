@@ -12,8 +12,3 @@ make_report <- function(id_company){
                     encoding = "utf-8")
   
 }
-
-
-
-print(name_supplier)
-
