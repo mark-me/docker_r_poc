@@ -1,0 +1,14 @@
+---
+title: "Test report"
+author: "Mark Zwart"
+date: "14-6-2019"
+output: html_document
+---
+
+```{r setup, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(yaml)
+config <- read_yaml(paste0(dir_project,"/config.yml"))
+```
+
