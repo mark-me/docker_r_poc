@@ -1,5 +1,5 @@
 # Base image 
-FROM graydon/base-r-tidyverse:latest
+FROM graydon/r-base-tidy:latest
 
 # install the linux libraries needed for plumber
 RUN apt-get update -qq && apt-get install -y \
@@ -21,4 +21,4 @@ COPY report.Rmd report.Rmd
 EXPOSE 80
 
 # when the container starts, start the main.R script
-ENTRYPOINT ["Rscript", "main.R"]
+#ENTRYPOINT ["Rscript", "main.R"]
