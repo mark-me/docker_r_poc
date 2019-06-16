@@ -9,6 +9,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(readr)
 library(yaml)
-config <- read_yaml(paste0(dir_project,"/config.yml"))
+config <- read_yaml("config.yml")
 ```
 
