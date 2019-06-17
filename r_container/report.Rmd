@@ -9,6 +9,15 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(readr)
 library(yaml)
+library(ggplot2)
 config <- read_yaml("config.yml")
 ```
 
+```{r}
+mtcars$cyl <- as.factor(mtcars$cyl)
+ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point(aes(color=cyl, shape=cyl)) + 
+  geom_smooth(aes(color=cyl), 
+              method=lm, se=FALSE, fullrange=TRUE) +
+  labs(title = config$id_company)
+```
