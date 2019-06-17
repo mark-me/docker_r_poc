@@ -36,3 +36,4 @@ vignettes/*.pdf
 rsconnect/
 
 r_container/data
+r_container/report
