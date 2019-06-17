@@ -5,6 +5,7 @@ date: "14-6-2019"
 output: html_document
 ---
 
+
 ```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(readr)
@@ -12,6 +13,15 @@ library(yaml)
 library(ggplot2)
 config <- read_yaml("config.yml")
 ```
+
+```{r echo=FALSE}
+df_market <- read_rds("data/market_sample.RDS")
+```
+
+```{r}
+
+```
+
 
 ```{r}
 mtcars$cyl <- as.factor(mtcars$cyl)
