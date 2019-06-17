@@ -1,2 +1,5 @@
 install.packages("plumber")
 install.packages("yaml")
+install.packages("devtools")
+library(devtools)
+install_github("mark-me/graydon.package")
