@@ -1,25 +1,66 @@
 ---
-title: "Test report"
-author: "Mark Zwart"
 date: "14-6-2019"
 output: html_document
 ---
 
-
 ```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(readr)
+library(tidyverse)
 library(yaml)
-library(ggplot2)
+library(magrittr)
 config <- read_yaml("config.yml")
 ```
-
 ```{r echo=FALSE}
 df_market <- read_rds("data/market_sample.RDS")
+df_sector <- read_rds("data/sector.RDS")
+
+df_company <- df_market %>% filter(id_graydon == config$id_company)
+sector_company <- df_company$code_sbi
+name_sector_company <- df_company$description_SBI
 ```
-
+# `r df_company$name_company`
 ```{r}
+rating_pd_company <- df_company$rating_pd
 
+df_pd <- df_sector %>%
+  filter(!is.na(rating_pd) & rating_pd != "NR") %>% 
+  mutate(is_sector = ifelse(code_sbi == sector_company, name_sector_company, "Markt")) %>% 
+  group_by(rating_pd, is_sector) %>% 
+  summarise(qty_companies = sum(qty_companies)) %>% 
+  ungroup() %>% 
+  group_by(is_sector) %>% 
+  mutate(perc_companies = qty_companies / sum(qty_companies)) %>% 
+  ungroup() 
+
+perc_grp <- sum((df_pd %>% filter(rating_pd < rating_pd_company))$perc_companies) + sum((df_pd %>% filter(rating_pd == rating_pd_company))$perc_companies)/2
+
+df_pd %>% 
+ggplot(aes(x = is_sector, y = perc_companies, fill = rating_pd)) +
+  geom_col(col = "white") +
+  geom_text(aes(label = perc_companies),
+            position = position_stack(vjust = 0.5),
+            col = "white",
+            fontface = "bold",
+            size = 3) +
+  labs(title = "",
+       fill = "Graydon Rating",
+       x = "",
+       y = "")+
+  annotate("text", x = name_sector_company, y = perc_grp, 
+           label = df_company$name_company) +
+  scale_y_continuous(expand = c(0,0)) +
+  guides(fill = guide_legend(reverse = FALSE))+
+  scale_fill_manual(values=c("#4ea73e",
+                             "#8eb744",
+                             "#daca4a", 
+                             "#ffcd4c",
+                             "#f8be28",
+                             "#f79b3f",
+                             "#F58F2D",
+                             "#F07035",
+                             "#e42923",
+                             "#c71d18")) +
+  theme_bw()
 ```
 
 
