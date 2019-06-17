@@ -14,12 +14,15 @@ config <- read_yaml("config.yml")
 df_market <- read_rds("data/market_sample.RDS")
 df_sector <- read_rds("data/sector.RDS")
 
+df_test_no <- df_market$id_graydon
+write_csv2(df_test_no, "data/test_nrs.csv)
+
 df_company <- df_market %>% filter(id_graydon == config$id_company)
 sector_company <- df_company$code_sbi
 name_sector_company <- df_company$description_SBI
 ```
 # `r df_company$name_company`
-```{r}
+```{r, echo=FALSE}
 rating_pd_company <- df_company$rating_pd
 
 df_pd <- df_sector %>%
@@ -63,8 +66,7 @@ ggplot(aes(x = is_sector, y = perc_companies, fill = rating_pd)) +
   theme_bw()
 ```
 
-
-```{r}
+```{r, echo=FALSE}
 mtcars$cyl <- as.factor(mtcars$cyl)
 ggplot(mtcars, aes(x = wt, y = mpg)) + 
   geom_point(aes(color=cyl, shape=cyl)) + 
