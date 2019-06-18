@@ -1,5 +1,5 @@
 # Base image 
-FROM rocker/geospatial:latest
+FROM rocker/geospatial:3.5.3
 
 # install the linux libraries needed for plumber
 RUN apt-get update -qq && apt-get install -y \
