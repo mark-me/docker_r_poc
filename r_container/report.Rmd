@@ -19,7 +19,7 @@ sector_company <- df_company$code_sbi
 name_sector_company <- df_company$description_SBI
 ```
 # `r df_company$name_company`
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 rating_pd_company <- df_company$rating_pd
 
 df_pd <- df_sector %>%
@@ -32,12 +32,14 @@ df_pd <- df_sector %>%
   mutate(perc_companies = qty_companies / sum(qty_companies)) %>% 
   ungroup() 
 
-perc_grp <- sum((df_pd %>% filter(rating_pd < rating_pd_company))$perc_companies) + sum((df_pd %>% filter(rating_pd == rating_pd_company))$perc_companies)/2
+perc_grp <- sum((df_pd %>% filter(rating_pd < rating_pd_company))$perc_companies) + 
+  sum((df_pd %>% filter(rating_pd == rating_pd_company))$perc_companies)/2
 
 df_pd %>% 
+  mutate(perc_companies_label = paste(round(100*perc_companies, 2), "%", sep="")) %>% 
 ggplot(aes(x = is_sector, y = perc_companies, fill = rating_pd)) +
   geom_col(col = "white") +
-  geom_text(aes(label = perc_companies),
+  geom_text(aes(label = perc_companies_label),
             position = position_stack(vjust = 0.5),
             col = "white",
             fontface = "bold",
@@ -45,11 +47,11 @@ ggplot(aes(x = is_sector, y = perc_companies, fill = rating_pd)) +
   labs(title = "",
        fill = "Graydon Rating",
        x = "",
-       y = "")+
+       y = "") +
   annotate("hline", x = name_sector_company, yintercept = perc_grp) +
   annotate("text", x = name_sector_company, y = perc_grp, 
-           label = df_company$name_company, vjust = -.8) +
-  scale_y_continuous(expand = c(0,0)) +
+           label = df_company$name_company, vjust = -.8, hjust = -.8) +
+  scale_y_continuous(expand = c(0,0), labels = scales::percent_format(accuracy = 1)) +
   guides(fill = guide_legend(reverse = FALSE))+
   scale_fill_manual(values=c("#4ea73e",
                              "#8eb744",
@@ -64,11 +66,7 @@ ggplot(aes(x = is_sector, y = perc_companies, fill = rating_pd)) +
   theme_bw()
 ```
 
+
 ```{r, echo=FALSE}
-mtcars$cyl <- as.factor(mtcars$cyl)
-ggplot(mtcars, aes(x = wt, y = mpg)) + 
-  geom_point(aes(color=cyl, shape=cyl)) + 
-  geom_smooth(aes(color=cyl), 
-              method=lm, se=FALSE, fullrange=TRUE) +
-  labs(title = config$id_company)
+version
 ```
