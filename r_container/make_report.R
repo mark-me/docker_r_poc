@@ -8,8 +8,9 @@ make_report <- function(id_company){
   
   # Render report
   rmarkdown::render("report.Rmd",
-                    output_file=paste0("report/", id_company, "report.html"),
+                    output_file=paste0("report/", id_company, "_report.html"),
                     encoding = "utf-8")
 
-  list(msg = paste0("The message is: '", id_company, "'"))
+  list(msg = paste0("The finished the report for: '", id_company, "'"),
+       report_url = paste0("http://172.26.23.237/", id_company, "_report.html"))
 }
