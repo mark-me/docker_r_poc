@@ -14,9 +14,6 @@ config <- read_yaml("config.yml")
 df_market <- read_rds("data/market_sample.RDS")
 df_sector <- read_rds("data/sector.RDS")
 
-df_test_no <- df_market$id_graydon
-write_csv2(df_test_no, "data/test_nrs.csv)
-
 df_company <- df_market %>% filter(id_graydon == config$id_company)
 sector_company <- df_company$code_sbi
 name_sector_company <- df_company$description_SBI
@@ -49,8 +46,9 @@ ggplot(aes(x = is_sector, y = perc_companies, fill = rating_pd)) +
        fill = "Graydon Rating",
        x = "",
        y = "")+
+  annotate("hline", x = name_sector_company, yintercept = perc_grp) +
   annotate("text", x = name_sector_company, y = perc_grp, 
-           label = df_company$name_company) +
+           label = df_company$name_company, vjust = -.8) +
   scale_y_continuous(expand = c(0,0)) +
   guides(fill = guide_legend(reverse = FALSE))+
   scale_fill_manual(values=c("#4ea73e",
