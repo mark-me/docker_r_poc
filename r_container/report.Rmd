@@ -10,6 +10,7 @@ library(yaml)
 library(igraph)
 library(magrittr)
 library(graydon.package)
+library(visNetwork)
 config <- read_yaml("config.yml")
 ```
 ```{r echo=FALSE}
