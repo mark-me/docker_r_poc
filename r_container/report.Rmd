@@ -8,11 +8,13 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(yaml)
 library(magrittr)
+library(graydon.package)
 config <- read_yaml("config.yml")
 ```
 ```{r echo=FALSE}
 df_market <- read_rds("data/market_sample.RDS")
 df_sector <- read_rds("data/sector.RDS")
+graph_company_hierarchies <- read_rds("data/company_graph.rds")
 
 df_company <- df_market %>% filter(id_graydon == config$id_company)
 sector_company <- df_company$code_sbi
@@ -51,7 +53,7 @@ ggplot(aes(x = is_sector, y = perc_companies, fill = rating_pd)) +
   annotate("hline", x = name_sector_company, yintercept = perc_grp) +
   annotate("text", x = name_sector_company, y = perc_grp, 
            label = df_company$name_company, vjust = -.8, hjust = -.8) +
-  scale_y_continuous(expand = c(0,0), labels = scales::percent_format(accuracy = 1)) +
+  scale_y_percent(expand = c(0,0)) +
   guides(fill = guide_legend(reverse = FALSE))+
   scale_fill_manual(values=c("#4ea73e",
                              "#8eb744",
@@ -63,10 +65,76 @@ ggplot(aes(x = is_sector, y = perc_companies, fill = rating_pd)) +
                              "#F07035",
                              "#e42923",
                              "#c71d18")) +
-  theme_bw()
+  theme_graydon()
 ```
 
 
 ```{r, echo=FALSE}
-version
+prep_graph <- function(graph, id_company) {
+  
+  # Set data  
+  graph <- mark_ego_graph(graph = graph, id_company = id_company,
+                          target_attribute = "is_1st_degree", 
+                          distance = 1, direction = "all")
+  graph <- mark_ego_graph(graph = graph, id_company = id_company,
+                          target_attribute = "is_2nd_degree", 
+                          distance = 2, direction = "all")
+  V(graph)$distance <- ifelse(V(graph)$is_searched_company, 0,
+                              ifelse(V(graph)$is_1st_degree, 1,
+                                     ifelse(V(graph)$is_2nd_degree, 2, 
+                                            3))) 
+  # Set visuals
+  V(graph)$shape <- "box"
+  V(graph)$font.face <- "Roboto"
+  V(graph)$label <- str_wrap(ifelse(!is.na(V(graph)$name_company),
+                                    V(graph)$name_company,
+                                    V(graph)$description_SBI), 10)
+  V(graph)$font.size <- c(20, 18, 16, 14)[V(graph)$distance + 1]
+
+  V(graph)$shadow <- V(graph)$distance < 3
+  colfunc <- colorRampPalette(c(col_graydon[5], col_graydon[4]))
+  V(graph)$color.background <- ifelse(!V(graph)$is_active,
+                                      col_graydon[7],
+                                      colfunc(4)[V(graph)$distance + 1])
+  V(graph)$font.color <- ifelse(V(graph)$distance < 2,
+                                "white",
+                                col_graydon[6])
+  V(graph)$borderWidth <- ifelse(V(graph)$is_searched_company, 3, 2)
+  V(graph)$color.border <- ifelse(V(graph)$distance < 2, col_graydon[5], col_graydon[7])
+  return(graph)
+}
+
+
+# Function for plotting networks
+plot_visnetwork <- function(graph) {
+  
+  graph <- vertices_add_distance_to_root(graph = graph, vertex_attribute = "level")
+  vertices <- igraph::as_data_frame(graph, what = "vertices")
+  names(vertices)[1] <- "id"
+  edges <- igraph::as_data_frame(graph, what = "edges")
+  
+  vis_net <- visNetwork(vertices, edges) %>% #, height = "800px", width = "100%")  %>%
+    visOptions(highlightNearest = TRUE,
+               collapse = TRUE) %>%                                   # General options
+    visNodes(shadow = TRUE,                                           # Vertex options
+             # shape= "circle",
+             # shapeProperties = list(useBorderWithImage = TRUE,
+             #                        useImageSize = TRUE),
+             color=list(background = col_graydon[4],
+                        border = col_graydon[5],
+                        highlight = list(background = col_graydon[5],
+                                         border = col_graydon[4]),
+                        hover = col_graydon[9])) %>%
+    visEdges(color = col_graydon[3],                                  # Edge options
+             arrows = list(to = TRUE)) %>%
+    visHierarchicalLayout() %>%
+    addFontAwesome() %>% 
+    visInteraction(navigationButtons = TRUE)
+  
+  return(vis_net)
+}
+
+graph_relation <- find_company_hierarchy(graph_company_hierarchies, config$id_company)
+graph_relation <- prep_graph(graph_relation, config$id_company)
+plot_visnetwork(graph_relation)
 ```
