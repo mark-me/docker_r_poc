@@ -9,7 +9,7 @@ RUN apt-get update -qq && apt-get install -y \
 # create directories
 RUN mkdir -p /home/project
 RUN mkdir -p /home/project/input_data
-RUN mkdir -p /home/prohect/output
+RUN mkdir -p /home/project/output
 RUN mkdir -p /data
 
 ## copy files
