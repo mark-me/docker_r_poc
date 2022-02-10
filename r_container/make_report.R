@@ -12,5 +12,5 @@ make_report <- function(id_company){
                     encoding = "utf-8")
 
   list(msg = paste0("The finished the report for: '", id_company, "'"),
-       report_url = paste0("http://172.26.23.237/", id_company, "_report.html"))
+       report_url = paste0("http://192.168.178.47/", id_company, "_report.html"))
 }
